@@ -18,17 +18,11 @@ public class NotepadApp2 implements ActionListener{
     NotepadApp2() {
         // Create a new JFrame container.   
         JFrame jfrm = new JFrame("Untitled - Notepad");
-
-        // Specify FlowLayout for the layout manager.   
         jfrm.setSize(940, 780);
-
-        // Terminate the program when the user closes the application.   
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Create a label that will display the menu selection. 
+        // Create a label that will display the menu selection & menu bar
         jlab = new JLabel();
-
-        // Create the menu bar. 
         JMenuBar jmb = new JMenuBar();
         
         // Create textArea
@@ -38,8 +32,8 @@ public class NotepadApp2 implements ActionListener{
         // Set font
         Font font = new Font("Courier New", Font.PLAIN, 12);
         text.setFont(font);
-
-
+        
+        
         // Create the File menu. 
         JMenu jmFile = new JMenu("File");
         JMenuItem jmiExit = new JMenuItem("Exit");
@@ -56,22 +50,17 @@ public class NotepadApp2 implements ActionListener{
         jmOptions.addSeparator();
         jmOptions.add(jmiReset);
 
-        // Finally, add the entire options menu to 
-        // the menu bar 
+        // add the entire options menu to menu bar 
         jmb.add(jmOptions);
 
-        // Create the Help menu. 
+        // Create Menus
         JMenu jmHelp = new JMenu("Help");
         JMenuItem jmiAbout = new JMenuItem("About");
-        jmHelp.add(jmiAbout);
-        jmb.add(jmHelp);
-        
-        // Create the Edit menu.
         JMenu jmEdit = new JMenu("Edit");
-        jmb.add(jmEdit);
-        
-        // Create the View menu
         JMenu jmView = new JMenu("View");
+        jmHelp.add(jmiAbout);
+        jmb.add(jmHelp);  
+        jmb.add(jmEdit);
         jmb.add(jmView);
         
         // Add action listeners for the menu items. 
@@ -80,7 +69,7 @@ public class NotepadApp2 implements ActionListener{
 		jmiPrint.addActionListener(this);
 
         // Add the label to the content pane. 
-        jfrm.add(jlab);
+        text.add(jlab);
 
         // Add the menu bar to the frame. 
         jfrm.setJMenuBar(jmb);
@@ -100,16 +89,21 @@ public class NotepadApp2 implements ActionListener{
     public void actionPerformed(ActionEvent ae) {
         // Get the action command from the menu selection. 
         String comStr = ae.getActionCommand();
-
+        
+        // Create icon
+     	ImageIcon noteIcon = new ImageIcon("notepad.png");
+        
         // If user chooses Exit, then exit the program. 
         if (comStr.equals("Exit")) {
             System.exit(0);
         }else if(comStr.equals("Print")){
         	jlab.setText("Printing...");
         }else if(comStr.equals("About")) {
-        	jlab.setText("by D. Tran");
+        	JOptionPane.showMessageDialog(null, "(c) D. Tran", "About Notepad",
+        		    JOptionPane.INFORMATION_MESSAGE, noteIcon);
         }
     }
+    
 
     public static void main(String args[]) {
         // Create the frame on the event dispatching thread.   
