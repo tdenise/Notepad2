@@ -36,34 +36,46 @@ public class NotepadApp2 implements ActionListener{
         
         // Create the File menu. 
         JMenu jmFile = new JMenu("File");
+        JMenuItem jmiNew = new JMenuItem("New");
+        JMenuItem jmiOpen = new JMenuItem("Open...");
+        JMenuItem jmiSave = new JMenuItem("Save");
+        JMenuItem jmiSaveAs = new JMenuItem("Save as...");
+        JMenuItem jmiPgSetup = new JMenuItem("Page Setup...");
         JMenuItem jmiExit = new JMenuItem("Exit");
-        JMenuItem jmiPrint = new JMenuItem("Print");
+        JMenuItem jmiPrint = new JMenuItem("Print...");
+        jmFile.add(jmiNew);
+        jmFile.add(jmiOpen);
+        jmFile.add(jmiSave);
+        jmFile.add(jmiSaveAs);
+        jmFile.addSeparator();
+        jmFile.add(jmiPgSetup);
+        jmFile.add(jmiPrint);
         jmFile.addSeparator();
         jmFile.add(jmiExit);
-        jmb.add(jmFile);
 
-        // Create the Format menu. 
+        
+        // Create menus
+        JMenu jmEdit = new JMenu("Edit");
         JMenu jmOptions = new JMenu("Format");
+        JMenu jmView = new JMenu("View");
+        JMenuItem jmiAbout = new JMenuItem("About");
+        JMenu jmHelp = new JMenu("Help");
 
         // Create the Reset menu item. 
         JMenuItem jmiReset = new JMenuItem("Reset");
         jmOptions.addSeparator();
         jmOptions.add(jmiReset);
 
-        // add the entire options menu to menu bar 
-        jmb.add(jmOptions);
-
-        // Create Menus
-        JMenu jmHelp = new JMenu("Help");
-        JMenuItem jmiAbout = new JMenuItem("About");
-        JMenu jmEdit = new JMenu("Edit");
-        JMenu jmView = new JMenu("View");
-        jmHelp.add(jmiAbout);
-        jmb.add(jmHelp);  
+        // Add to menu bar
+        jmb.add(jmFile);
         jmb.add(jmEdit);
+        jmb.add(jmOptions);
+        jmHelp.add(jmiAbout);
         jmb.add(jmView);
+        jmb.add(jmHelp);  
         
         // Add action listeners for the menu items. 
+        jmiAbout.addActionListener(this);
         jmiExit.addActionListener(this);
         jmiAbout.addActionListener(this);
 		jmiPrint.addActionListener(this);
@@ -101,6 +113,8 @@ public class NotepadApp2 implements ActionListener{
         }else if(comStr.equals("About")) {
         	JOptionPane.showMessageDialog(null, "(c) D. Tran", "About Notepad",
         		    JOptionPane.INFORMATION_MESSAGE, noteIcon);
+        }else if(comStr.equals("Open...")){
+        	
         }
     }
     
