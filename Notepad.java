@@ -11,6 +11,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.Scanner;
 
 import javax.swing.*;
 
@@ -18,6 +19,9 @@ import javax.swing.*;
 public class Notepad implements ActionListener{
 	JLabel jlab;
 	JTextArea text = new JTextArea(10, 10);
+	int i = 0;
+    JTextPane textPane;
+    int lineCount;
 
     Notepad() {
         // Create a new JFrame container.   
@@ -61,12 +65,35 @@ public class Notepad implements ActionListener{
         JMenu jmEdit = new JMenu("Edit");
         JMenu jmOptions = new JMenu("Format");
         JMenu jmView = new JMenu("View");
-        JMenuItem jmiAbout = new JMenuItem("About");
         JMenu jmHelp = new JMenu("Help");
         
-        // Create edit menu items.
+        // Create edit menu items
+        JMenuItem jmiUndo = new JMenuItem("Undo");
+        JMenuItem jmiCut = new JMenuItem("Cut");
+        JMenuItem jmiCopy = new JMenuItem("Copy");
+        JMenuItem jmiPaste = new JMenuItem("Paste");
+        JMenuItem jmiDelete = new JMenuItem("Delete");
+        JMenuItem jmiSearch = new JMenuItem("Search with Bing...");
+        JMenuItem jmiFind = new JMenuItem("Find Next");
+        JMenuItem jmiReplace = new JMenuItem("Replace");
         JMenuItem jmiGoTo = new JMenuItem("Go To...");
+        JMenuItem jmiSelect = new JMenuItem("Select All");
+        JMenuItem jmiTime = new JMenuItem("Time/Date");
+        jmEdit.add(jmiUndo);
+        jmEdit.addSeparator();
+        jmEdit.add(jmiCut);
+        jmEdit.add(jmiCopy);
+        jmEdit.add(jmiPaste);
+        jmEdit.add(jmiDelete);
+        jmEdit.addSeparator();
+        jmEdit.add(jmiSearch);
+        jmEdit.add(jmiFind);
+        jmEdit.add(jmiReplace);
         jmEdit.add(jmiGoTo);
+        jmEdit.addSeparator();
+        jmEdit.add(jmiSelect);
+        jmEdit.add(jmiTime);
+
         
         // Create view menu items.
         JMenuItem jmiStatusBar = new JMenuItem("Status Bar");
@@ -74,16 +101,29 @@ public class Notepad implements ActionListener{
         jmView.add(jmiZoom);
         jmView.add(jmiStatusBar);
 
-        // Create the Reset menu item. 
-        JMenuItem jmiReset = new JMenuItem("Reset");
-        jmOptions.addSeparator();
-        jmOptions.add(jmiReset);
+//        // Create the Reset menu item. 
+//        JMenuItem jmiReset = new JMenuItem("Reset");
+//        jmOptions.addSeparator();
+//        jmOptions.add(jmiReset);
+        
+        // Create menu items for format
+        JMenuItem jmiWordWrap = new JMenuItem("Word Wrap");
+        JMenuItem jmiFont = new JMenuItem("Font...");
+        jmOptions.add(jmiWordWrap);
+        jmOptions.add(jmiFont);
+        
+        // Create menu items for help menu 
+        JMenuItem jmiView = new JMenuItem("View Help");
+        JMenuItem jmiAbout = new JMenuItem("About");
+        jmHelp.add(jmiView);
+        jmHelp.addSeparator();
+        jmHelp.add(jmiAbout);
 
-        // Add to menu bar
+        
+        // Add to menu
         jmb.add(jmFile);
         jmb.add(jmEdit);
         jmb.add(jmOptions);
-        jmHelp.add(jmiAbout);
         jmb.add(jmView);
         jmb.add(jmHelp);  
         
@@ -93,6 +133,7 @@ public class Notepad implements ActionListener{
         jmiAbout.addActionListener(this);
 		jmiPrint.addActionListener(this);
 		jmiOpen.addActionListener(this);
+		jmiGoTo.addActionListener(this);
 
         // Add the label to the content pane. 
         text.add(jlab);
@@ -118,6 +159,13 @@ public class Notepad implements ActionListener{
         
         ImageIcon noteIcon = new ImageIcon("notepad.png");
      	JFileChooser chooser = new JFileChooser();
+     	JDialog dialog = new JDialog();
+        //dialog.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
+     	dialog.setSize(940, 780);
+        JLabel label = new JLabel("Line number: ");
+        JTextField jtf = new JTextField();
+        dialog.add(label);
+        dialog.add(jtf);
 
      	
         // If user chooses Exit, then exit the program. 
@@ -143,10 +191,13 @@ public class Notepad implements ActionListener{
         		 System.out.println("Error");
         		 break;
         	 }
-       
+        }else if(comStr.equals("Go To...")) {
+        		dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true); 
         }
     }
     
+     
 
     public static void main(String args[]) {
         // Create the frame on the event dispatching thread.   
