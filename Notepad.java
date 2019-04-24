@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.Scanner;
 
 import javax.swing.*;
+import javax.swing.text.PlainDocument;
 
 
 public class Notepad implements ActionListener{
@@ -22,10 +23,11 @@ public class Notepad implements ActionListener{
 	int i = 0;
     JTextPane textPane;
     int lineCount;
+    JFrame jfrm = new JFrame("Untitled - Notepad");
+
 
     Notepad() {
         // Create a new JFrame container.   
-        JFrame jfrm = new JFrame("Untitled Notepad");
         jfrm.setSize(940, 780);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -34,7 +36,7 @@ public class Notepad implements ActionListener{
         JMenuBar jmb = new JMenuBar();
         
         
-        JScrollPane jsp = new JScrollPane(text);
+        JScrollPane jsp = new JScrollPane(text, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         
         // Set font
         Font font = new Font("Courier New", Font.PLAIN, 12);
@@ -118,7 +120,6 @@ public class Notepad implements ActionListener{
         jmHelp.add(jmiView);
         jmHelp.addSeparator();
         jmHelp.add(jmiAbout);
-
         
         // Add to menu
         jmb.add(jmFile);
@@ -159,14 +160,6 @@ public class Notepad implements ActionListener{
         
         ImageIcon noteIcon = new ImageIcon("notepad.png");
      	JFileChooser chooser = new JFileChooser();
-     	JDialog dialog = new JDialog();
-        //dialog.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
-     	dialog.setSize(940, 780);
-        JLabel label = new JLabel("Line number: ");
-        JTextField jtf = new JTextField();
-        dialog.add(label);
-        dialog.add(jtf);
-
      	
         // If user chooses Exit, then exit the program. 
         if (comStr.equals("Exit")) {
@@ -192,13 +185,81 @@ public class Notepad implements ActionListener{
         		 break;
         	 }
         }else if(comStr.equals("Go To...")) {
-        		dialog.setLocationRelativeTo(null);
-                dialog.setVisible(true); 
+        	goToDialog(); 
         }
     }
     
+    
+    // implement a method that when called returns the line number
+//    public static lineNumber() {
+//    	return null;
+//    }
      
-
+//    public void setCaret() {
+//    	text.setCaretPosition(
+//                text.getDocument().getDefaultRootElement().getElement(index).getStartOffset());
+//        text.requestFocusInWindow();
+//        
+//    }
+    
+    public void goToDialog() {
+    	JTextField jtfInput = new JTextField(20);
+		JLabel lineNumLabel = new JLabel("Line Number: ");
+		JDialog dialog = new JDialog(jfrm, "Go To Line", true);
+		JButton jbOk = new JButton("Ok");
+		JButton jbCancel = new JButton("Cancel");
+        dialog.setSize(640, 400);      
+        GridBagLayout gbag = new GridBagLayout();
+        GridBagConstraints gbc = new GridBagConstraints();
+        dialog.getContentPane().setLayout(gbag);
+        
+        // 
+//        PlainDocument doc = (PlainDocument) jtfInput.getDocument();
+//        doc.setDocumentFilter(new MyIntFilter());
+        
+        gbc.weightx = 1.0;
+        
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbag.setConstraints(lineNumLabel, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbag.setConstraints(jtfInput, gbc);
+           
+        gbc.insets = new Insets(1, 1, 1, 1);
+                
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        gbag.setConstraints(jbOk, gbc);
+        
+        gbc.gridx = 3;
+        gbc.gridy = 3;
+        gbag.setConstraints(jbCancel, gbc);
+        
+        jtfInput.addActionListener(new ActionListener() {
+     		public void actionPerformed(ActionEvent le) {
+     			try{
+     				text.setCaretPosition(0);
+     				text.moveCaretPosition(Integer.parseInt(jtfInput.getText(), 10));
+            		System.out.println(Integer.parseInt(jtfInput.getText(), 10));
+     			}catch (Exception e) {
+     				
+     			}
+			}
+        });
+        
+        dialog.getContentPane().add(lineNumLabel);
+        dialog.getContentPane().add(jtfInput);
+        dialog.getContentPane().add(jbOk);
+        dialog.getContentPane().add(jbCancel);
+        
+        dialog.setBackground(Color.LIGHT_GRAY);
+        dialog.setResizable(false);
+      	dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+    }
+    
     public static void main(String args[]) {
         // Create the frame on the event dispatching thread.   
         SwingUtilities.invokeLater(() -> {
