@@ -1,11 +1,11 @@
 //
 // Name: Tran, Denise
 // Homework: #4
-// Due: Thursday April 18, 2019 
+// Due: Thursday April 25, 2019 
 // Course: cs-2450-02-sp19
 //
 // Description:
-// Implement the go to function in the Notepad application
+// Implement the font viewer function in the Notepad application
 //
 
 import java.awt.*;
@@ -135,6 +135,7 @@ public class Notepad implements ActionListener{
 		jmiPrint.addActionListener(this);
 		jmiOpen.addActionListener(this);
 		jmiGoTo.addActionListener(this);
+		jmiFont.addActionListener(this);
 
         // Add the label to the content pane. 
         text.add(jlab);
@@ -185,24 +186,54 @@ public class Notepad implements ActionListener{
         		 break;
         	 }
         }else if(comStr.equals("Go To...")) {
-        	goToDialog(); 
+        	createGoToDialog(); 
+        }else if(comStr.equals("Font...")) {
+        	createFontDialog();
+        	
         }
     }
     
-    
-    // implement a method that when called returns the line number
-//    public static lineNumber() {
-//    	return null;
-//    }
-     
-//    public void setCaret() {
-//    	text.setCaretPosition(
-//                text.getDocument().getDefaultRootElement().getElement(index).getStartOffset());
-//        text.requestFocusInWindow();
-//        
-//    }
-    
-    public void goToDialog() {
+    public void createFontDialog() {
+//    	Font selFont = JFontChooser.showDialog(JFrame parent, Font initialFont);
+//    	if (selFont != null) {
+//    	 //font selected in selFont
+//    	} else { // cancel
+//    	} 
+    	JLabel labelFont = new JLabel("Font: ");
+    	JLabel labelFStyle = new JLabel("Font Style: ");
+    	JLabel labelSize = new JLabel("Size: ");
+    	JLabel labelSample = new JLabel("Sample ");
+    	JLabel labelScript = new JLabel("Script: ");
+    	
+    	
+    	JDialog dialog = new JDialog();
+		dialog.setSize(400, 1000);  
+		
+		// load the list with all available fonts
+        JList<String> fonts = new JList<>(
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()
+        );
+        fonts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        dialog.add(new JLabel("Select font: Plain 18 points"), BorderLayout.NORTH);
+        dialog.add(new JScrollPane(fonts));
+        JLabel sample = new JLabel("The quick brown fox jumps over the lazy dog 0123456789");
+      
+        dialog.add(sample, BorderLayout.SOUTH);
+        
+        fonts.addListSelectionListener((le) -> {;
+            sample.setFont(new Font((String)fonts.getSelectedValue(), Font.PLAIN, 18));
+        });
+        fonts.setSelectedIndex(0);
+		
+		
+		dialog.setBackground(Color.LIGHT_GRAY);
+        dialog.setResizable(false);
+      	dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+    }
+       
+    public void createGoToDialog() {
     	JTextField jtfInput = new JTextField(20);
 		JLabel lineNumLabel = new JLabel("Line Number: ");
 		JDialog dialog = new JDialog(jfrm, "Go To Line", true);
@@ -212,10 +243,6 @@ public class Notepad implements ActionListener{
         GridBagLayout gbag = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         dialog.getContentPane().setLayout(gbag);
-        
-        // 
-//        PlainDocument doc = (PlainDocument) jtfInput.getDocument();
-//        doc.setDocumentFilter(new MyIntFilter());
         
         gbc.weightx = 1.0;
         
@@ -240,11 +267,11 @@ public class Notepad implements ActionListener{
         jtfInput.addActionListener(new ActionListener() {
      		public void actionPerformed(ActionEvent le) {
      			try{
-     				text.setCaretPosition(0);
-     				text.moveCaretPosition(Integer.parseInt(jtfInput.getText(), 10));
-            		System.out.println(Integer.parseInt(jtfInput.getText(), 10));
+     				int parsedInput = Integer.parseInt(jtfInput.getText());
+     				text.setCaretPosition(parsedInput + 1);
+            		System.out.println(parsedInput);  	     				
      			}catch (Exception e) {
-     				
+     	
      			}
 			}
         });
