@@ -23,7 +23,7 @@ public class Notepad implements ActionListener{
 	int i = 0;
     JTextPane textPane;
     int lineCount;
-    JFrame jfrm = new JFrame("Untitled - Notepad");
+    static JFrame jfrm = new JFrame("Untitled Notepad");
 
 
     Notepad() {
@@ -77,7 +77,7 @@ public class Notepad implements ActionListener{
         JMenuItem jmiDelete = new JMenuItem("Delete");
         JMenuItem jmiSearch = new JMenuItem("Search with Bing...");
         JMenuItem jmiFind = new JMenuItem("Find Next");
-        JMenuItem jmiReplace = new JMenuItem("Replace");
+        JMenuItem jmiReplace = new JMenuItem("Replace...");
         JMenuItem jmiGoTo = new JMenuItem("Go To...");
         JMenuItem jmiSelect = new JMenuItem("Select All");
         JMenuItem jmiTime = new JMenuItem("Time/Date");
@@ -136,7 +136,9 @@ public class Notepad implements ActionListener{
 		jmiOpen.addActionListener(this);
 		jmiGoTo.addActionListener(this);
 		jmiFont.addActionListener(this);
+		jmiReplace.addActionListener(this);
 
+		
         // Add the label to the content pane. 
         text.add(jlab);
 
@@ -190,49 +192,56 @@ public class Notepad implements ActionListener{
         }else if(comStr.equals("Font...")) {
         	createFontDialog();
         	
+        }else if(comStr.equals("Replace...")) {
+        	createReplaceDialog();
         }
+        
     }
     
-    public void createFontDialog() {
-//    	Font selFont = JFontChooser.showDialog(JFrame parent, Font initialFont);
-//    	if (selFont != null) {
-//    	 //font selected in selFont
-//    	} else { // cancel
-//    	} 
-    	JLabel labelFont = new JLabel("Font: ");
-    	JLabel labelFStyle = new JLabel("Font Style: ");
-    	JLabel labelSize = new JLabel("Size: ");
-    	JLabel labelSample = new JLabel("Sample ");
-    	JLabel labelScript = new JLabel("Script: ");
-    	
-    	
-    	JDialog dialog = new JDialog();
-		dialog.setSize(400, 1000);  
-		
-		// load the list with all available fonts
-        JList<String> fonts = new JList<>(
-                GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()
-        );
-        fonts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
-        dialog.add(new JLabel("Select font: Plain 18 points"), BorderLayout.NORTH);
-        dialog.add(new JScrollPane(fonts));
-        JLabel sample = new JLabel("The quick brown fox jumps over the lazy dog 0123456789");
-      
-        dialog.add(sample, BorderLayout.SOUTH);
-        
-        fonts.addListSelectionListener((le) -> {;
-            sample.setFont(new Font((String)fonts.getSelectedValue(), Font.PLAIN, 18));
-        });
-        fonts.setSelectedIndex(0);
-		
-		
-		dialog.setBackground(Color.LIGHT_GRAY);
-        dialog.setResizable(false);
-      	dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
+    public static void createFontDialog() {
+    	JFontChooser.showDialog(jfrm, "Consolas");
     }
        
+    public void createReplaceDialog() {
+    	JDialog dialog = new JDialog(jfrm, "Replace ", false);
+    	dialog.setSize(400, 300);
+    	
+    	JPanel panelText = new JPanel(); // contains TextFields
+    	JPanel panelLabels = new JPanel(); // contains Labels
+    	JPanel panelButtons = new JPanel(); // set boxLayout & add buttons
+    	JPanel panelCheck = new JPanel(); // contains checkboxes
+    	
+    	//panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.PAGE_AXIS));
+    	    	
+    	JButton buttonReplace = new JButton("Replace "); // when pressed replaces first term ahead of caret with new term 
+    	JButton buttonReplaceAll = new JButton("Replace All"); // when pressed replaces all values with new term
+    	JButton buttonFNext = new JButton("Find Next "); // when pressed finds term ahead of caret
+    	JButton buttonCancel = new JButton("Cancel "); // when pressed dialog is closed
+    	buttonReplace.setSize(30, 30);
+    	buttonReplaceAll.setSize(30,30);
+    	buttonFNext.setSize(30,30);
+    	buttonCancel.setSize(30,30);
+    	
+    	panelButtons.add(buttonFNext);
+    	panelButtons.add(buttonReplace);
+    	panelButtons.add(buttonReplaceAll);
+    	panelButtons.add(buttonCancel);
+    	
+    	buttonReplace.addActionListener(this);
+    	buttonReplaceAll.addActionListener(this);
+    	buttonFNext.addActionListener(this);
+    	buttonCancel.addActionListener(this);
+    	  	
+    	JCheckBox check = new JCheckBox();
+    	JCheckBox check2 = new JCheckBox();
+    	
+        dialog.getContentPane().add(panelButtons);
+    	dialog.setBackground(Color.LIGHT_GRAY);
+      	dialog.setLocationRelativeTo(null);
+        dialog.setResizable(false);
+    	dialog.setVisible(true);
+    }
+    
     public void createGoToDialog() {
     	JTextField jtfInput = new JTextField(20);
 		JLabel lineNumLabel = new JLabel("Line Number: ");
