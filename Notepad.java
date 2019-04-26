@@ -206,26 +206,38 @@ public class Notepad implements ActionListener{
     	JDialog dialog = new JDialog(jfrm, "Replace ", false);
     	dialog.setSize(400, 300);
     	
+    	// contains buttons
+    	JPanel panelB1 = new JPanel(); 
+    	JPanel panelB2 = new JPanel();
+    	JPanel panelB3 = new JPanel();
+    	JPanel panelB4 = new JPanel();
+    	
     	JPanel panelText = new JPanel(); // contains TextFields
     	JPanel panelLabels = new JPanel(); // contains Labels
     	JPanel panelButtons = new JPanel(); // set boxLayout & add buttons
     	JPanel panelCheck = new JPanel(); // contains checkboxes
     	
-    	//panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.PAGE_AXIS));
+    	panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.PAGE_AXIS));
     	    	
     	JButton buttonReplace = new JButton("Replace "); // when pressed replaces first term ahead of caret with new term 
     	JButton buttonReplaceAll = new JButton("Replace All"); // when pressed replaces all values with new term
     	JButton buttonFNext = new JButton("Find Next "); // when pressed finds term ahead of caret
     	JButton buttonCancel = new JButton("Cancel "); // when pressed dialog is closed
-    	buttonReplace.setSize(30, 30);
-    	buttonReplaceAll.setSize(30,30);
-    	buttonFNext.setSize(30,30);
-    	buttonCancel.setSize(30,30);
     	
-    	panelButtons.add(buttonFNext);
-    	panelButtons.add(buttonReplace);
-    	panelButtons.add(buttonReplaceAll);
-    	panelButtons.add(buttonCancel);
+    	buttonReplace.setPreferredSize(new Dimension(100, 30));
+    	buttonReplaceAll.setPreferredSize(new Dimension(100, 30));
+    	buttonFNext.setPreferredSize(new Dimension(100, 30));
+    	buttonCancel.setPreferredSize(new Dimension(100, 30));
+    	
+    	panelB1.add(buttonFNext);
+    	panelB2.add(buttonReplace);
+    	panelB3.add(buttonReplaceAll);
+    	panelB4.add(buttonCancel);
+    	
+    	panelButtons.add(panelB1);
+    	panelButtons.add(panelB2);
+    	panelButtons.add(panelB3);
+    	panelButtons.add(panelB4);
     	
     	buttonReplace.addActionListener(this);
     	buttonReplaceAll.addActionListener(this);
