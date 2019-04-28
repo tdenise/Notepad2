@@ -46,12 +46,16 @@ public class Notepad implements ActionListener{
         // Create the File menu. 
         JMenu jmFile = new JMenu("File");
         JMenuItem jmiNew = new JMenuItem("New");
+        jmiNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
         JMenuItem jmiOpen = new JMenuItem("Open...");
+        jmiOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
         JMenuItem jmiSave = new JMenuItem("Save");
+        jmiSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
         JMenuItem jmiSaveAs = new JMenuItem("Save as...");
         JMenuItem jmiPgSetup = new JMenuItem("Page Setup...");
         JMenuItem jmiExit = new JMenuItem("Exit");
         JMenuItem jmiPrint = new JMenuItem("Print...");
+        jmiPrint.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
         jmFile.add(jmiNew);
         jmFile.add(jmiOpen);
         jmFile.add(jmiSave);
@@ -70,17 +74,30 @@ public class Notepad implements ActionListener{
         JMenu jmHelp = new JMenu("Help");
         
         // Create edit menu items
-        JMenuItem jmiUndo = new JMenuItem("Undo");
-        JMenuItem jmiCut = new JMenuItem("Cut");
-        JMenuItem jmiCopy = new JMenuItem("Copy");
-        JMenuItem jmiPaste = new JMenuItem("Paste");
-        JMenuItem jmiDelete = new JMenuItem("Delete");
-        JMenuItem jmiSearch = new JMenuItem("Search with Bing...");
-        JMenuItem jmiFind = new JMenuItem("Find Next");
-        JMenuItem jmiReplace = new JMenuItem("Replace...");
-        JMenuItem jmiGoTo = new JMenuItem("Go To...");
-        JMenuItem jmiSelect = new JMenuItem("Select All");
-        JMenuItem jmiTime = new JMenuItem("Time/Date");
+        JMenuItem jmiUndo = new JMenuItem("Undo", KeyEvent.VK_Z);
+        jmiUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+        JMenuItem jmiCut = new JMenuItem("Cut", KeyEvent.VK_X);
+        jmiCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+        JMenuItem jmiCopy = new JMenuItem("Copy", KeyEvent.VK_C);
+        jmiCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        JMenuItem jmiPaste = new JMenuItem("Paste", KeyEvent.VK_V);
+        jmiPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+        JMenuItem jmiDelete = new JMenuItem("Delete", KeyEvent.VK_DELETE);
+        jmiDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+        JMenuItem jmiSearch = new JMenuItem("Search with Bing...", KeyEvent.VK_E);
+        jmiSearch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
+        JMenuItem jmiFind = new JMenuItem("Find...", KeyEvent.VK_F);
+        jmiFind.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
+        JMenuItem jmiFindN = new JMenuItem("Find Next", KeyEvent.VK_F3);
+        jmiFindN.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.CTRL_MASK));
+        JMenuItem jmiReplace = new JMenuItem("Replace...", KeyEvent.VK_H);
+        jmiReplace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
+        JMenuItem jmiGoTo = new JMenuItem("Go To...", KeyEvent.VK_G);
+        jmiGoTo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
+        JMenuItem jmiSelect = new JMenuItem("Select All", KeyEvent.VK_A);
+        jmiSelect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+        JMenuItem jmiTime = new JMenuItem("Time/Date", KeyEvent.VK_F5);
+        jmiTime.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, InputEvent.CTRL_MASK));
         jmEdit.add(jmiUndo);
         jmEdit.addSeparator();
         jmEdit.add(jmiCut);
@@ -90,6 +107,7 @@ public class Notepad implements ActionListener{
         jmEdit.addSeparator();
         jmEdit.add(jmiSearch);
         jmEdit.add(jmiFind);
+        jmEdit.add(jmiFindN);
         jmEdit.add(jmiReplace);
         jmEdit.add(jmiGoTo);
         jmEdit.addSeparator();
@@ -110,6 +128,7 @@ public class Notepad implements ActionListener{
         
         // Create menu items for format
         JMenuItem jmiWordWrap = new JMenuItem("Word Wrap");
+        
         JMenuItem jmiFont = new JMenuItem("Font...");
         jmOptions.add(jmiWordWrap);
         jmOptions.add(jmiFont);
@@ -201,6 +220,17 @@ public class Notepad implements ActionListener{
     public static void createFontDialog() {
     	JFontChooser.showDialog(jfrm, "Consolas");
     }
+    
+    // Error message pops up when nothing to replace
+    // or when term looking for is not there
+    public void errorMessageDialog() {
+    	JDialog dialog = new JDialog(jfrm, "Replace", true);
+    	dialog.setSize(100, 100);
+    	
+  //  	JLabel errorMessage = new JLabel("Cannot find "\n" + term + \n"");
+    	
+    	dialog.setVisible(true);
+    }
        
     public void createReplaceDialog() {
     	JDialog dialog = new JDialog(jfrm, "Replace ", false);
@@ -218,11 +248,24 @@ public class Notepad implements ActionListener{
     	JPanel panelCheck = new JPanel(); // contains checkboxes
     	
     	panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.PAGE_AXIS));
+    	panelCheck.setLayout(new BorderLayout());
     	    	
     	JButton buttonReplace = new JButton("Replace "); // when pressed replaces first term ahead of caret with new term 
     	JButton buttonReplaceAll = new JButton("Replace All"); // when pressed replaces all values with new term
     	JButton buttonFNext = new JButton("Find Next "); // when pressed finds term ahead of caret
     	JButton buttonCancel = new JButton("Cancel "); // when pressed dialog is closed
+    	
+    	JLabel labelFind = new JLabel("Find what: ");
+    	JLabel labelReplace = new JLabel("Replace with: ");
+    	
+    	JCheckBox check = new JCheckBox("Match case ");
+    	JCheckBox check2 = new JCheckBox("Wrap around ");
+    	
+    	JTextField field1 = new JTextField();
+    	JTextField field2 = new JTextField();
+    	
+    	panelCheck.add(BorderLayout.CENTER, check);
+    	panelCheck.add(check2);
     	
     	buttonReplace.setPreferredSize(new Dimension(100, 30));
     	buttonReplaceAll.setPreferredSize(new Dimension(100, 30));
@@ -243,10 +286,8 @@ public class Notepad implements ActionListener{
     	buttonReplaceAll.addActionListener(this);
     	buttonFNext.addActionListener(this);
     	buttonCancel.addActionListener(this);
-    	  	
-    	JCheckBox check = new JCheckBox();
-    	JCheckBox check2 = new JCheckBox();
     	
+    	dialog.getContentPane().add(panelCheck);
         dialog.getContentPane().add(panelButtons);
     	dialog.setBackground(Color.LIGHT_GRAY);
       	dialog.setLocationRelativeTo(null);
