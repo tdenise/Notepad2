@@ -10,10 +10,24 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import javax.swing.text.PlainDocument;
 
 
@@ -23,12 +37,12 @@ public class Notepad implements ActionListener{
 	int i = 0;
     JTextPane textPane;
     int lineCount;
-    static JFrame jfrm = new JFrame("Untitled Notepad");
+    static JFrame jfrm = new JFrame("Untitled - Notepad");
 
 
     Notepad() {
         // Create a new JFrame container.   
-        jfrm.setSize(940, 780);
+    	jfrm.setSize(800, 600);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create a label that will display the menu selection & menu bar
@@ -45,6 +59,7 @@ public class Notepad implements ActionListener{
         
         // Create the File menu. 
         JMenu jmFile = new JMenu("File");
+        jmFile.setMnemonic('F');
         JMenuItem jmiNew = new JMenuItem("New");
         jmiNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
         JMenuItem jmiOpen = new JMenuItem("Open...");
@@ -69,28 +84,32 @@ public class Notepad implements ActionListener{
         
         // Create menus
         JMenu jmEdit = new JMenu("Edit");
+        jmEdit.setMnemonic('E');
         JMenu jmOptions = new JMenu("Format");
+        jmOptions.setMnemonic('O');
         JMenu jmView = new JMenu("View");
+        jmView.setMnemonic('V');
         JMenu jmHelp = new JMenu("Help");
+        jmHelp.setMnemonic('H');
         
         // Create edit menu items
-        JMenuItem jmiUndo = new JMenuItem("Undo", KeyEvent.VK_Z);
+        JMenuItem jmiUndo = new JMenuItem("Undo", KeyEvent.VK_U);
         jmiUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
-        JMenuItem jmiCut = new JMenuItem("Cut", KeyEvent.VK_X);
+        JMenuItem jmiCut = new JMenuItem("Cut", KeyEvent.VK_T);
         jmiCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
         JMenuItem jmiCopy = new JMenuItem("Copy", KeyEvent.VK_C);
         jmiCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
-        JMenuItem jmiPaste = new JMenuItem("Paste", KeyEvent.VK_V);
+        JMenuItem jmiPaste = new JMenuItem("Paste", KeyEvent.VK_P);
         jmiPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
-        JMenuItem jmiDelete = new JMenuItem("Delete", KeyEvent.VK_DELETE);
+        JMenuItem jmiDelete = new JMenuItem("Delete", KeyEvent.VK_L);
         jmiDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
         JMenuItem jmiSearch = new JMenuItem("Search with Bing...", KeyEvent.VK_E);
         jmiSearch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
         JMenuItem jmiFind = new JMenuItem("Find...", KeyEvent.VK_F);
         jmiFind.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
-        JMenuItem jmiFindN = new JMenuItem("Find Next", KeyEvent.VK_F3);
+        JMenuItem jmiFindN = new JMenuItem("Find Next", KeyEvent.VK_N);
         jmiFindN.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.CTRL_MASK));
-        JMenuItem jmiReplace = new JMenuItem("Replace...", KeyEvent.VK_H);
+        JMenuItem jmiReplace = new JMenuItem("Replace...", KeyEvent.VK_R);
         jmiReplace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
         JMenuItem jmiGoTo = new JMenuItem("Go To...", KeyEvent.VK_G);
         jmiGoTo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
@@ -98,7 +117,6 @@ public class Notepad implements ActionListener{
         jmiSelect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
         JMenuItem jmiTime = new JMenuItem("Time/Date", KeyEvent.VK_F5);
         jmiTime.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, InputEvent.CTRL_MASK));
-        jmEdit.add(jmiUndo);
         jmEdit.addSeparator();
         jmEdit.add(jmiCut);
         jmEdit.add(jmiCopy);
@@ -116,8 +134,8 @@ public class Notepad implements ActionListener{
 
         
         // Create view menu items.
-        JMenuItem jmiStatusBar = new JMenuItem("Status Bar");
-        JMenuItem jmiZoom = new JMenuItem("Zoom");
+        JMenuItem jmiStatusBar = new JMenuItem("Status Bar", KeyEvent.VK_S);
+        JMenuItem jmiZoom = new JMenuItem("Zoom", KeyEvent.VK_Z);
         jmView.add(jmiZoom);
         jmView.add(jmiStatusBar);
 
@@ -127,15 +145,22 @@ public class Notepad implements ActionListener{
 //        jmOptions.add(jmiReset);
         
         // Create menu items for format
-        JMenuItem jmiWordWrap = new JMenuItem("Word Wrap");
+        JMenuItem jmiWordWrap = new JMenuItem("Word Wrap", KeyEvent.VK_W);
         
-        JMenuItem jmiFont = new JMenuItem("Font...");
+        JMenuItem jmiFont = new JMenuItem("Font...", KeyEvent.VK_F);
         jmOptions.add(jmiWordWrap);
         jmOptions.add(jmiFont);
+             
+        JMenu jmiColor = new JMenu("Color ");
+        jmOptions.add(jmiColor);
+        JMenuItem jmiForeground = new JMenuItem("Foreground", KeyEvent.VK_F);
+        JMenuItem jmiBackground = new JMenuItem("Background", KeyEvent.VK_B);
+        jmiColor.add(jmiForeground);
+        jmiColor.add(jmiBackground);
         
         // Create menu items for help menu 
-        JMenuItem jmiView = new JMenuItem("View Help");
-        JMenuItem jmiAbout = new JMenuItem("About");
+        JMenuItem jmiView = new JMenuItem("View Help", KeyEvent.VK_H);
+        JMenuItem jmiAbout = new JMenuItem("About", KeyEvent.VK_A);
         jmHelp.add(jmiView);
         jmHelp.addSeparator();
         jmHelp.add(jmiAbout);
@@ -150,13 +175,22 @@ public class Notepad implements ActionListener{
         // Add action listeners for the menu items. 
         jmiAbout.addActionListener(this);
         jmiExit.addActionListener(this);
-        jmiAbout.addActionListener(this);
 		jmiPrint.addActionListener(this);
 		jmiOpen.addActionListener(this);
 		jmiGoTo.addActionListener(this);
 		jmiFont.addActionListener(this);
 		jmiReplace.addActionListener(this);
-
+		jmiTime.addActionListener(this);
+		jmiNew.addActionListener(this);
+		jmiCut.addActionListener(this);
+		jmiCopy.addActionListener(this);
+		jmiPaste.addActionListener(this);
+		jmiDelete.addActionListener(this);
+		jmiSelect.addActionListener(this);
+		jmiView.addActionListener(this);
+		jmiSaveAs.addActionListener(this);
+		jmiWordWrap.addActionListener(this);
+		jmiFind.addActionListener(this);
 		
         // Add the label to the content pane. 
         text.add(jlab);
@@ -168,7 +202,7 @@ public class Notepad implements ActionListener{
         jfrm.getContentPane().add(jsp);
         
         // center on default screen
-      	jfrm.setLocationRelativeTo(null);
+      	// jfrm.setLocationRelativeTo(null);
 
         // Display the frame.   
         jfrm.setVisible(true);
@@ -181,46 +215,100 @@ public class Notepad implements ActionListener{
         String comStr = ae.getActionCommand();
         
         ImageIcon noteIcon = new ImageIcon("notepad.png");
-     	JFileChooser chooser = new JFileChooser();
+ 
      	
         // If user chooses Exit, then exit the program. 
         if (comStr.equals("Exit")) {
-            System.exit(0);
+            saveDialog();
+            //if() {
+            //	System.exit(0);
+            //}
         }else if(comStr.equals("Print")){
         	jlab.setText("Printing...");
         }else if(comStr.equals("About")) {
         	JOptionPane.showMessageDialog(null, "(c) D. Tran", "About Notepad",
         		    JOptionPane.INFORMATION_MESSAGE, noteIcon);
         }else if(comStr.equals("Open...")){
-        	 int result = chooser.showOpenDialog(null);
-        	 switch(result) {
-        	 case JFileChooser.APPROVE_OPTION:
-        		 System.out.println("Open was clicked");
-        		 File filename = chooser.getSelectedFile();
-            	 System.out.println("File name "+ filename.getName());
-        		 break;
-        	 case JFileChooser.CANCEL_OPTION:
-        		 System.out.println("Cancel or close icon was clicked");
-        		 break;
-        	 case JFileChooser.ERROR_OPTION:
-        		 System.out.println("Error");
-        		 break;
-        	 }
+        	openChooser();
+        }else if(comStr.equals("Save as...")){
+        	saveChooser();
+        }else if(comStr.equals("Save")){
+        	
         }else if(comStr.equals("Go To...")) {
         	createGoToDialog(); 
         }else if(comStr.equals("Font...")) {
-        	createFontDialog();
-        	
+        	 final JFontChooser jfont = new JFontChooser();
+             jfont.setVisible(true);
+             final int opt = jfont.showDialog(jfrm);
+             if (opt == JFontChooser.OK_OPTION) {
+             text.setFont(jfont.getSelectedFont());
+//        	createFontDialog();
         }else if(comStr.equals("Replace...")) {
         	createReplaceDialog();
-        }
+        }else if(comStr.equals("Time/Date")) {
+        	displayDate();
+        }else if(comStr.equals("Cut")) {
+        	text.cut();
+        }else if(comStr.equals("Copy")) {
+        	text.copy();
+        }else if(comStr.equals("Delete")) {
+        	text.cut();
+        }else if(comStr.equals("Select All")) {
+        	text.selectAll();
+        }else if(comStr.equals("View Help")) {
+        	goWebsite();
+        }else if(comStr.equals("New")) {
+        	text.setText("");
+        }else if(comStr.equals("Word Wrap")) {
+        	text.setWrapStyleWord(true);
+        	text.setLineWrap(true);
+        }else if(comStr.equals("Find...")) {
+        	findDialog();
+        }}
+    }
         
+    public void saveDialog() {
+    	JDialog dialog = new JDialog(jfrm, "Notepad", true);
+    	dialog.setSize(624, 240);
+    	JButton save = new JButton("Save");
+    	JButton saveAs = new JButton("Save As");
+    	JButton cancel = new JButton("Cancel");
+    	JLabel label = new JLabel("Do you want to save changes to Untitled?");
+    	
+    	JPanel panel = new JPanel();
+    	panel.add(label);
+    	
+    	JPanel panelButtons = new JPanel();
+    	panelButtons.add(save);
+    	panelButtons.add(saveAs);
+    	panelButtons.add(cancel);
+    	
+    	JPanel panel2 = new JPanel();
+    	panel2.add(panel);
+    	panel2.add(panelButtons);
+     	
+    	// bundle buttons
+    	
+    	// put jlabel in its own jpanel
+    	
+    	dialog.getContentPane().add(panel2);
+    	dialog.setBackground(Color.LIGHT_GRAY);
+    	dialog.setResizable(false);
+    	dialog.setVisible(true);
+    	
+//    	public void actionPerformed(ActionEvent le) {
+//            String comStr = ae.getActionCommand();
+//		};
     }
     
-    public static void createFontDialog() {
-    	JFontChooser.showDialog(jfrm, "Consolas");
+    public void displayDate() {
+    	Date now = new Date();
+        //Set date format as you want
+        SimpleDateFormat sf = new SimpleDateFormat("h:mm a d/MM/yyyy"); 
+        this.text.setText(sf.format(now));
     }
     
+
     // Error message pops up when nothing to replace
     // or when term looking for is not there
     public void errorMessageDialog() {
@@ -229,9 +317,115 @@ public class Notepad implements ActionListener{
     	
   //  	JLabel errorMessage = new JLabel("Cannot find "\n" + term + \n"");
     	
+    	
     	dialog.setVisible(true);
     }
        
+    public void findDialog() {
+    	
+    	JDialog dialog = new JDialog();
+    	JLabel jLabel1 = new JLabel();
+    	JTextField jTextField1 = new JTextField();
+    	JButton jButton1 = new JButton();
+    	JButton jButton2 = new JButton();
+    	JRadioButton jRadioButton1 = new JRadioButton();
+    	JRadioButton jRadioButton2 = new JRadioButton();
+    	JCheckBox jCheckBox1 = new JCheckBox();
+    	JCheckBox jCheckBox2 = new JCheckBox();
+
+        jLabel1.setText("Find what: ");
+        jTextField1.setText(" "); 
+        jButton1.setText("Find Next");
+        jButton2.setText("Cancel");
+        jRadioButton1.setText("Up");   
+        
+        jButton2.addActionListener(this);
+        jRadioButton1.addActionListener(this);
+
+        jRadioButton2.setSelected(true);
+        jRadioButton2.setText("Down");
+        jRadioButton2.addActionListener(this);
+
+        jCheckBox1.setText("Match case");
+        jCheckBox1.addActionListener(this);
+
+        jCheckBox2.setText("Wrap around");
+        jCheckBox2.addActionListener(this);
+
+        GroupLayout layout = new GroupLayout(dialog.getContentPane());
+        dialog.getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(35, 35, 35)
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jCheckBox2)
+                        .addGap(85, 85, 85)
+                        .addComponent(jRadioButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jRadioButton2)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jCheckBox1)
+                        .addGap(330, 330, 330)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(61, 61, 61)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addComponent(jCheckBox1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addGap(14, 14, 14)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jRadioButton1)
+                            .addComponent(jRadioButton2))))
+                .addContainerGap(52, Short.MAX_VALUE))
+        );
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(null);
+        dialog.setResizable(false);
+    	dialog.setVisible(true);
+    	
+    	
+//    	String findstr = jTextField1.getText().toUpperCase(); // User Input Word to find
+//    	int findstrLength = findstr.length();                   
+//    	String findtextarea = text.getText().toUpperCase(); // TextArea Content
+//    	Highlighter h = text.getHighlighter();
+//    	h.removeAllHighlights();
+//    	try
+//    	    {
+//    	        int index=0;
+//    	        while(index>=0)                             // What should I put here ??
+//    	        {
+//    	            index = findtextarea.indexOf(findstr,index);
+//    	            h.addHighlight(index,index+findstrLength, DefaultHighlighter.DefaultPainter);
+//    	        }
+//    	    } catch (BadLocationException e) {
+//				e.printStackTrace();
+//			}
+    }
+    
     public void createReplaceDialog() {
     	JDialog dialog = new JDialog(jfrm, "Replace ", false);
     	dialog.setSize(400, 300);
@@ -327,7 +521,7 @@ public class Notepad implements ActionListener{
         gbag.setConstraints(jbCancel, gbc);
         
         jtfInput.addActionListener(new ActionListener() {
-     		public void actionPerformed(ActionEvent le) {
+     	public void actionPerformed(ActionEvent le) {
      			try{
      				int parsedInput = Integer.parseInt(jtfInput.getText());
      				text.setCaretPosition(parsedInput + 1);
@@ -347,6 +541,64 @@ public class Notepad implements ActionListener{
         dialog.setResizable(false);
       	dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+    
+    public void openChooser() {
+    	
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "Text Files(*.txt)", "txt");
+        fileChooser.setFileFilter(filter);
+        fileChooser.setCurrentDirectory(new File(System
+                .getProperty("user.home")));
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader(selectedFile));
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+
+                while (line != null) {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                    line = br.readLine();
+                }
+                String all = sb.toString();
+                text.setText(all);
+            }catch(Exception e){
+                e.printStackTrace();
+            }finally {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                   
+                }
+            }
+        }
+	   	 
+    }
+    
+    public void saveChooser() {
+    	JFileChooser chooser = new JFileChooser();
+    	int option = chooser.showSaveDialog(null);
+    	
+    	try(FileWriter fw = new FileWriter(chooser.getSelectedFile()+".txt")) {    	    
+    		if (option == JFileChooser.APPROVE_OPTION) {
+	    	File fileToSave = chooser.getSelectedFile();
+	    	System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+    		}
+    	}catch(Exception ae) {}
+    	
+    }
+    
+    private void goWebsite() {
+    	try {
+    		Desktop.getDesktop().browse(new URI("https://binged.it/302MdwR"));
+    	} catch (URISyntaxException | IOException ex) {
+          
+        }    
     }
     
     public static void main(String args[]) {
