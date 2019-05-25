@@ -139,7 +139,7 @@ public class Notepad implements ActionListener{
 //        jmOptions.add(jmiReset);
         
         // Create menu items for format
-        JMenuItem jmiWordWrap = new JMenuItem("Word Wrap", KeyEvent.VK_W);
+        JCheckBoxMenuItem jmiWordWrap = new JCheckBoxMenuItem("Word Wrap");
         
         JMenuItem jmiFont = new JMenuItem("Font...", KeyEvent.VK_F);
         jmOptions.add(jmiWordWrap);
@@ -258,8 +258,13 @@ public class Notepad implements ActionListener{
         }else if(comStr.equals("New")) {
         	text.setText("");
         }else if(comStr.equals("Word Wrap")) {
-        	text.setWrapStyleWord(true);
-        	text.setLineWrap(true);
+        	 AbstractButton button = (AbstractButton) ae.getSource();
+             if (button.isSelected()) {
+                 text.setLineWrap(true);
+             } else {
+                 text.setLineWrap(false);
+             }
+             text.revalidate();
         }else if(comStr.equals("Find...")) {
         	findDialog();
         }else if(comStr.equals("Foreground")) {
@@ -268,10 +273,11 @@ public class Notepad implements ActionListener{
         	colorBackgroundDialog();
         }else if(comStr.equals("Search with Bing...")) {
         	goSearchWebsite();
-        }
+        }       
             
     }
     
+  
     public void colorForegroundDialog() {
         JButton colorButton=new JButton();
         JColorChooser colorPicker =new JColorChooser();
@@ -315,7 +321,6 @@ public class Notepad implements ActionListener{
         dialog.setVisible(true);
     }
         
-    
 
 	public void saveDialog() {
     	JDialog dialog = new JDialog(jfrm, "Notepad", true);
