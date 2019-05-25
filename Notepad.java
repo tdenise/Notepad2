@@ -247,6 +247,7 @@ public class Notepad implements ActionListener{
         	displayDate();
         }else if(comStr.equals("Cut")) {
         	text.cut();
+        	text.copy();
         }else if(comStr.equals("Copy")) {
         	text.copy();
         }else if(comStr.equals("Paste")) {
