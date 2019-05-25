@@ -249,6 +249,8 @@ public class Notepad implements ActionListener{
         	text.cut();
         }else if(comStr.equals("Copy")) {
         	text.copy();
+        }else if(comStr.equals("Paste")) {
+        	text.paste();
         }else if(comStr.equals("Delete")) {
         	text.cut();
         }else if(comStr.equals("Select All")) {
