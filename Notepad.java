@@ -1,5 +1,4 @@
 //
-// Name: Tran, Denise
 // Homework: #4
 // Due: Thursday April 25, 2019 
 // Course: cs-2450-02-sp19
@@ -11,7 +10,6 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -20,15 +18,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
-import java.util.logging.Logger;
+
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
-import javax.swing.text.PlainDocument;
+
 
 
 public class Notepad implements ActionListener{
@@ -191,6 +185,10 @@ public class Notepad implements ActionListener{
 		jmiSaveAs.addActionListener(this);
 		jmiWordWrap.addActionListener(this);
 		jmiFind.addActionListener(this);
+		jmiForeground.addActionListener(this);
+		jmiBackground.addActionListener(this);
+		jmiSearch.addActionListener(this);
+
 		
         // Add the label to the content pane. 
         text.add(jlab);
@@ -241,8 +239,8 @@ public class Notepad implements ActionListener{
              jfont.setVisible(true);
              final int opt = jfont.showDialog(jfrm);
              if (opt == JFontChooser.OK_OPTION) {
-             text.setFont(jfont.getSelectedFont());
-//        	createFontDialog();
+            	 text.setFont(jfont.getSelectedFont());
+             }
         }else if(comStr.equals("Replace...")) {
         	createReplaceDialog();
         }else if(comStr.equals("Time/Date")) {
@@ -256,7 +254,7 @@ public class Notepad implements ActionListener{
         }else if(comStr.equals("Select All")) {
         	text.selectAll();
         }else if(comStr.equals("View Help")) {
-        	goWebsite();
+        	goHelpWebsite();
         }else if(comStr.equals("New")) {
         	text.setText("");
         }else if(comStr.equals("Word Wrap")) {
@@ -264,10 +262,62 @@ public class Notepad implements ActionListener{
         	text.setLineWrap(true);
         }else if(comStr.equals("Find...")) {
         	findDialog();
-        }}
+        }else if(comStr.equals("Foreground")) {
+        	//colorDialog();
+        }else if(comStr.equals("Background")) {
+        	colorBackgroundDialog();
+        }else if(comStr.equals("Search with Bing...")) {
+        	goSearchWebsite();
+        }
+            
+    }
+    
+    public void colorForegroundDialog() {
+        JButton colorButton=new JButton();
+        JColorChooser colorPicker =new JColorChooser();
+        JDialog dialog = new JDialog();
+        
+        JPanel panel=new JPanel();
+        dialog.setContentPane(panel);
+        colorButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //2nd colorchooser appears for foreground
+                Color fgColor=JColorChooser.showDialog(null, "Foreground color", null);
+                text.setForeground(fgColor);
+            }
+        });
+        colorButton.setText("Pick a color");
+        panel.add(colorButton);
+        //dialog.add(panel);
+        dialog.setSize(400, 400);
+        dialog.setVisible(true);
+    }
+    
+    public void colorBackgroundDialog() {
+        JButton colorButton=new JButton();
+        JColorChooser colorPicker =new JColorChooser();
+        JDialog dialog = new JDialog();
+        
+        JPanel panel=new JPanel();
+        dialog.setContentPane(panel);
+        colorButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //1st color chooser for background color
+                Color bgColor = JColorChooser.showDialog(null, "Background color", null);
+                dialog.getContentPane().setBackground(bgColor);
+           
+            }
+        });
+        colorButton.setText("Pick a color");
+        panel.add(colorButton);
+        //dialog.add(panel);
+        dialog.setSize(400, 400);
+        dialog.setVisible(true);
     }
         
-    public void saveDialog() {
+    
+
+	public void saveDialog() {
     	JDialog dialog = new JDialog(jfrm, "Notepad", true);
     	dialog.setSize(624, 240);
     	JButton save = new JButton("Save");
@@ -296,16 +346,14 @@ public class Notepad implements ActionListener{
     	dialog.setResizable(false);
     	dialog.setVisible(true);
     	
-//    	public void actionPerformed(ActionEvent le) {
-//            String comStr = ae.getActionCommand();
-//		};
+    
     }
     
     public void displayDate() {
     	Date now = new Date();
         //Set date format as you want
         SimpleDateFormat sf = new SimpleDateFormat("h:mm a d/MM/yyyy"); 
-        this.text.setText(sf.format(now));
+        text.setText(sf.format(now));
     }
     
 
@@ -593,9 +641,17 @@ public class Notepad implements ActionListener{
     	
     }
     
-    private void goWebsite() {
+    private void goHelpWebsite() {
     	try {
     		Desktop.getDesktop().browse(new URI("https://binged.it/302MdwR"));
+    	} catch (URISyntaxException | IOException ex) {
+          
+        }    
+    }
+    
+    private void goSearchWebsite() {
+    	try {
+    		Desktop.getDesktop().browse(new URI("https://www.bing.com/?scope=web&mkt=en-US"));
     	} catch (URISyntaxException | IOException ex) {
           
         }    
