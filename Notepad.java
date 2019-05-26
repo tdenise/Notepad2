@@ -272,7 +272,7 @@ public class Notepad implements ActionListener{
         }else if(comStr.equals("Find...")) {
         	findDialog();
         }else if(comStr.equals("Foreground")) {
-        	//colorDialog();
+        	colorForegroundDialog();
         }else if(comStr.equals("Background")) {
         	colorBackgroundDialog();
         }else if(comStr.equals("Search with Bing...")) {
@@ -283,48 +283,26 @@ public class Notepad implements ActionListener{
     
   
     public void colorForegroundDialog() {
-        JButton colorButton=new JButton();
-        JColorChooser colorPicker =new JColorChooser();
-        JDialog dialog = new JDialog();
+    	JColorChooser colorPicker = new JColorChooser();
         
-        JPanel panel=new JPanel();
-        dialog.setContentPane(panel);
-        colorButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                //2nd colorchooser appears for foreground
-                Color fgColor=JColorChooser.showDialog(null, "Foreground color", null);
-                text.setForeground(fgColor);
-            }
-        });
-        colorButton.setText("Pick a color");
-        panel.add(colorButton);
-        //dialog.add(panel);
-        dialog.setSize(400, 400);
-        dialog.setVisible(true);
+        //1st color chooser for background color
+	    Color fgColor = JColorChooser.showDialog(null, "Foreground color", null);
+	    text.setForeground(fgColor);  
+	            
+        colorPicker.setVisible(true);
     }
     
     public void colorBackgroundDialog() {
-        JButton colorButton=new JButton();
-        JColorChooser colorPicker =new JColorChooser();
-        JDialog dialog = new JDialog();
+        JColorChooser colorPicker = new JColorChooser();
         
-        JPanel panel=new JPanel();
-        dialog.setContentPane(panel);
-        colorButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                //1st color chooser for background color
-                Color bgColor = JColorChooser.showDialog(null, "Background color", null);
-                dialog.getContentPane().setBackground(bgColor);
-           
-            }
-        });
-        colorButton.setText("Pick a color");
-        panel.add(colorButton);
-        //dialog.add(panel);
-        dialog.setSize(400, 400);
-        dialog.setVisible(true);
+        //1st color chooser for background color
+	    Color bgColor = JColorChooser.showDialog(null, "Background color", null);
+	    text.setBackground(bgColor);  
+	            
+        colorPicker.setVisible(true);
     }
-        
+    
+         
 
 	public void saveDialog() {
     	JDialog dialog = new JDialog(jfrm, "Notepad", true);
