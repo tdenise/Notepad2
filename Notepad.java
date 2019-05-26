@@ -128,7 +128,7 @@ public class Notepad implements ActionListener{
 
         
         // Create view menu items.
-        JMenuItem jmiStatusBar = new JMenuItem("Status Bar", KeyEvent.VK_S);
+        JCheckBoxMenuItem jmiStatusBar = new JCheckBoxMenuItem("Status Bar");
         JMenuItem jmiZoom = new JMenuItem("Zoom", KeyEvent.VK_Z);
         jmView.add(jmiZoom);
         jmView.add(jmiStatusBar);
@@ -188,6 +188,7 @@ public class Notepad implements ActionListener{
 		jmiForeground.addActionListener(this);
 		jmiBackground.addActionListener(this);
 		jmiSearch.addActionListener(this);
+		jmiStatusBar.addActionListener(this);
 
 		
         // Add the label to the content pane. 
@@ -361,7 +362,8 @@ public class Notepad implements ActionListener{
     	Date now = new Date();
         //Set date format as you want
         SimpleDateFormat sf = new SimpleDateFormat("h:mm a d/MM/yyyy"); 
-        text.setText(sf.format(now));
+        String typedText = text.getText();
+        text.setText(typedText + sf.format(now));
     }
     
 
