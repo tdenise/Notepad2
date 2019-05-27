@@ -1,12 +1,3 @@
-//
-// Homework: #4
-// Due: Thursday April 25, 2019 
-// Course: cs-2450-02-sp19
-//
-// Description:
-// Implement the font viewer function in the Notepad application
-//
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -21,7 +12,11 @@ import java.util.Date;
 
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.JTextComponent;
 
 
 
@@ -31,19 +26,48 @@ public class Notepad implements ActionListener{
 	int i = 0;
     JTextPane textPane;
     int lineCount;
-    static JFrame jfrm = new JFrame("Untitled - Notepad");
-
+    JFrame jfrm = new JFrame("Untitled - Notepad");
+    JLabel status = new JLabel("");
+    JPanel statusPanel = new JPanel();
 
     Notepad() {
-        // Create a new JFrame container.   
+        // Create a new JFrame container.  
+    	jfrm.setLayout(new BorderLayout());
     	jfrm.setSize(800, 600);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        text.addCaretListener(new CaretListener() {
+            public void caretUpdate(CaretEvent e) {
+                JTextArea editArea = (JTextArea)e.getSource();
+
+                int linenum = 1;
+                int columnnum = 1;
+
+                try {
+                    int caretpos = text.getCaretPosition();
+                    linenum = text.getLineOfOffset(caretpos);
+                    columnnum = caretpos - editArea.getLineStartOffset(linenum);
+
+                    linenum += 1;
+                }
+                catch(Exception ex) { }
+
+                updateStatus(linenum, columnnum);
+            }
+        });
+        
+        // Create status bar panel
+        statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        jfrm.add(statusPanel, BorderLayout.SOUTH);
+        statusPanel.setPreferredSize(new Dimension(jfrm.getWidth(), 16));
+        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+        status.setHorizontalAlignment(SwingConstants.RIGHT);
+        statusPanel.add(status);
+        statusPanel.setVisible(false);
 
         // Create a label that will display the menu selection & menu bar
         jlab = new JLabel();
         JMenuBar jmb = new JMenuBar();
-        
-        
         JScrollPane jsp = new JScrollPane(text, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         
         // Set font
@@ -132,11 +156,6 @@ public class Notepad implements ActionListener{
         JMenuItem jmiZoom = new JMenuItem("Zoom", KeyEvent.VK_Z);
         jmView.add(jmiZoom);
         jmView.add(jmiStatusBar);
-
-//        // Create the Reset menu item. 
-//        JMenuItem jmiReset = new JMenuItem("Reset");
-//        jmOptions.addSeparator();
-//        jmOptions.add(jmiReset);
         
         // Create menu items for format
         JCheckBoxMenuItem jmiWordWrap = new JCheckBoxMenuItem("Word Wrap");
@@ -205,6 +224,12 @@ public class Notepad implements ActionListener{
 
         // Display the frame.   
         jfrm.setVisible(true);
+        
+    }
+    
+    // This helper function updates the status bar with the line number and column number.
+    private void updateStatus(int linenumber, int columnnumber) {
+        status.setText("Windows (CRLF)   Ln " + linenumber + ", Col " + columnnumber);
     }
 
     // Handle menu item action events. 
@@ -277,11 +302,18 @@ public class Notepad implements ActionListener{
         	colorBackgroundDialog();
         }else if(comStr.equals("Search with Bing...")) {
         	goSearchWebsite();
-        }       
+        }else if(comStr.equals("Status Bar")) { 
+        	AbstractButton button = (AbstractButton) ae.getSource();
+            if (button.isSelected()) {
+            	statusPanel.setVisible(true);
+            } else {
+            	statusPanel.setVisible(false);
+            }
+        	
+        }
             
     }
     
-  
     public void colorForegroundDialog() {
     	JColorChooser colorPicker = new JColorChooser();
         
@@ -291,6 +323,7 @@ public class Notepad implements ActionListener{
 	            
         colorPicker.setVisible(true);
     }
+
     
     public void colorBackgroundDialog() {
         JColorChooser colorPicker = new JColorChooser();
@@ -302,8 +335,6 @@ public class Notepad implements ActionListener{
         colorPicker.setVisible(true);
     }
     
-         
-
 	public void saveDialog() {
     	JDialog dialog = new JDialog(jfrm, "Notepad", true);
     	dialog.setSize(624, 240);
